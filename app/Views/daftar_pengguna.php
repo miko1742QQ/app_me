@@ -52,7 +52,7 @@
                             <td style="margin: 5px; padding: 3px; text-align: center;"><?= $nomor++; ?></td>
                             <td style="margin: 5px; padding: 3px; text-align: justify;"><?= $value["nama_karyawan"]; ?></td>
                             <td style="margin: 5px; padding: 3px; text-align: justify;"><?= $value["username"]; ?></td>
-                            <td style="margin: 5px; padding: 3px; text-align: justify;"><?= $value["name"]; ?></td>
+                            <td style="margin: 5px; padding: 3px; text-align: justify;"><?= $value["nama_role"]; ?></td>
                             <td style="margin: 5px; padding: 3px; text-align: center;">
                                 <?= ($value['active'] == 1) ? 'AKTIF' : 'TIDAK AKTIF' ?>
                             </td>

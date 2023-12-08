@@ -14,10 +14,4 @@ class DaftarPoliModel extends Model
         'nama_poli',
         'kapasitas',
     ];
-
-    public function getPoli()
-    {
-        return $this->db->table('poli')
-            ->get()->getResultArray();
-    }
 }

@@ -22,13 +22,6 @@
             <?= csrf_field(); ?>
 
             <input type="hidden" id="force_pass_reset" name="force_pass_reset" value="0">
-            <select name="id_user" id="id_user" class="form-control <?php if (session('validation.id_user')) : ?> is-invalid <?php endif ?>" hidden>
-                <option value="" disabled selected>Pilih Karyawan</option>
-                <?php foreach ($id_user as $value) { ?>
-                    <option value="<?= $value['id']; ?>" selected><?= $value['id']; ?></option>"
-                <?php } ?>
-            </select>
-
             <div class="mb-3">
                 <label for="nik">Karyawan</label>
                 <select name="nik" id="nik" class="form-select <?php if (session('validation.nik')) : ?> is-invalid <?php endif ?>">

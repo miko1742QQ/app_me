@@ -22,8 +22,6 @@
             <?= csrf_field(); ?>
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="force_pass_reset" id="force_pass_reset" value="0">
-            <input type="hidden" name="id_user" value="<?= $user['id']; ?>">
-            <input type="hidden" name="nik" value="<?= $user['nik']; ?>">
             <input type="hidden" name="emailLama" value="<?= $user['email']; ?>">
             <input type="hidden" name="usernameLama" value="<?= $user['username']; ?>">
             <input type="hidden" name="id_roleLama" value="<?= $user['id_role']; ?>">
@@ -61,7 +59,7 @@
                         <label class="form-label">Status</label>
                         <select name="activedisable" id="activedisable" class="form-select" disabled>
                             <option value="" disabled>-Option-</option>
-                            <option value="<?= $user['active'] == 1 ?>"><?= ($user['active'] == 1) ? 'ACTIVE' : 'INACTIVE' ?></option>
+                            <option value="<?= $user['active'] == 1 ?>"><?= ($user['active'] == 1) ? 'Aktif' : 'Tidak Aktif' ?></option>
                         </select>
                     </div>
                 </div>

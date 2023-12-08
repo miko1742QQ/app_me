@@ -50,7 +50,7 @@ class DaftarPasienController extends BaseController
     {
         $data['title'] = 'Tambah Data Pasien SISPUS';
         $data['datauser'] = $this->karyawanModel->where(['nik' => user()->nik])->first();
-        $data['jeniskelamin'] = $this->jenkelModel->getJenkel();
+        $data['jeniskelamin'] = $this->jenkelModel->findall();
         return view('create_pasien', $data);
     }
 
@@ -59,7 +59,7 @@ class DaftarPasienController extends BaseController
         $data['title'] = 'Edit Pasien SISPUS';
         $data['datauser'] = $this->karyawanModel->where(['nik' => user()->nik])->first();
         $data['datapasien'] = $this->pasienModel->where(['id' => $id])->first();
-        $data['jeniskelamin'] = $this->jenkelModel->getJenkel();
+        $data['jeniskelamin'] = $this->jenkelModel->findall();
         return view('edit_pasien', $data);
     }
 

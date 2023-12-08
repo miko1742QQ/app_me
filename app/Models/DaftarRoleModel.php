@@ -14,10 +14,4 @@ class DaftarRoleModel extends Model
         'name',
         'description'
     ];
-
-    public function getRole()
-    {
-        return $this->db->table('auth_groups')
-            ->get()->getResultArray();
-    }
 }

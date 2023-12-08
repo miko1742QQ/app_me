@@ -5,14 +5,12 @@ namespace App\Controllers;
 use App\Models\DaftarRoleModel;
 use App\Models\DaftarGroupsRoleModel;
 use App\Models\DaftarPenggunaModel;
-use App\Models\DaftarPenggunaEditModel;
 use Myth\Auth\Password;
 use App\Models\DaftarKaryawanModel;
 
 class DaftarPenggunaController extends BaseController
 {
     protected $penggunaModel;
-    protected $penggunaEditModel;
     protected $roleModel;
     protected $groupsroleModel;
     protected $karyawanModel;
@@ -20,7 +18,6 @@ class DaftarPenggunaController extends BaseController
     public function __construct()
     {
         $this->penggunaModel = new DaftarPenggunaModel();
-        $this->penggunaEditModel = new DaftarPenggunaEditModel();
         $this->roleModel = new DaftarRoleModel();
         $this->groupsroleModel = new DaftarGroupsRoleModel();
         $this->karyawanModel = new DaftarKaryawanModel();
@@ -38,10 +35,9 @@ class DaftarPenggunaController extends BaseController
     {
         $data['title'] = 'Tambah Pengguna SISPUS';
         $data['datauser'] = $this->karyawanModel->where(['nik' => user()->nik])->first();
-        $data['users'] = $this->penggunaModel->getPengguna();
-        $data['id_user'] = $this->penggunaModel->getUsers();
-        $data['level'] = $this->penggunaModel->getLevel();
-        $data['karyawan'] = $this->penggunaModel->getKaryawan();
+        $data['users'] = $this->penggunaModel->findAll();
+        $data['level'] = $this->roleModel->findAll();
+        $data['karyawan'] = $this->karyawanModel->findAll();
 
         return view('create_pengguna', $data);
     }
@@ -96,7 +92,6 @@ class DaftarPenggunaController extends BaseController
             return redirect()->back()->withInput()->with('validation', $this->validator->getErrors());
         }
 
-        $id_user            = $this->request->getVar('id_user') + 1;
         $nik                = $this->request->getVar('nik');
         $id_role            = $this->request->getVar('id_role');
         $email              = $this->request->getVar('email');
@@ -117,13 +112,7 @@ class DaftarPenggunaController extends BaseController
             'force_pass_reset' => $force_pass_reset
         ];
 
-        $data1 = [
-            'group_id' => $id_role,
-            'user_id' => $id_user,
-        ];
-
-
-        if ($this->penggunaModel->save($data) == true && $this->groupsroleModel->save($data1) == true) {
+        if ($this->penggunaModel->save($data) == true) {
             return redirect()->to(base_url('daftar_pengguna'))->with('success', 'Data Pengguna Berhasil Disimpan');
         } else {
             return redirect()->back()->with('error', 'Data Pengguna Gagal Disimpan');
@@ -134,10 +123,8 @@ class DaftarPenggunaController extends BaseController
     {
         $data['title'] = 'Edit Pengguna SISPUS';
         $data['datauser'] = $this->karyawanModel->where(['nik' => user()->nik])->first();
-        $data['users'] = $this->penggunaModel->getPengguna();
-        $data['user'] = $this->penggunaEditModel->where(['id' => $id])->first();
-        $data['level'] = $this->penggunaModel->getLevel();
-        $data['karyawan'] = $this->penggunaModel->getKaryawan();
+        $data['user'] = $this->penggunaModel->where(['id' => $id])->first();
+        $data['level'] = $this->roleModel->findAll();
         return view('edit_pengguna', $data);
     }
 
@@ -177,8 +164,6 @@ class DaftarPenggunaController extends BaseController
             return redirect()->back()->withInput()->with('validation', $this->validator->getErrors());
         }
 
-        $id_user = $this->request->getVar('id_user');
-        $nik = $this->request->getVar('nik');
         $email = $this->request->getVar('email');
         if ($email == null) {
             $namaEmail = $this->request->getVar('emailLama');
@@ -233,12 +218,7 @@ class DaftarPenggunaController extends BaseController
             'force_pass_reset' => $force_pass_reset,
         ];
 
-        $data1 = [
-            'group_id' => $namaIDRole,
-            'user_id' => $id_user,
-        ];
-
-        if ($this->penggunaModel->update($id, $data) == true && $this->groupsroleModel->update($id, $data1) == true) {
+        if ($this->penggunaModel->update($id, $data) == true) {
             return redirect()->to(base_url('daftar_pengguna'))->with('success', 'Data Pengguna Berhasil Diperbaharui');
         } else {
             return redirect()->back()->with('error', 'Data Pengguna Gagal Diperbaharui');
@@ -247,7 +227,7 @@ class DaftarPenggunaController extends BaseController
 
     public function delete_pengguna($id = null)
     {
-        if ($this->penggunaEditModel->delete($id) == true) {
+        if ($this->penggunaModel->delete($id) == true) {
             return redirect()->to(base_url('daftar_pengguna'))->with('success', 'Data Pengguna Berhasil Dihapus');
         } else {
             return redirect()->back()->with('error', 'Data Pengguna Gagal Dihapus');

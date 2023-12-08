@@ -29,7 +29,6 @@ class Home extends BaseController
     {
         $data['datauser'] = $this->karyawanModel->where(['nik' => user()->nik])->first();
         $data['pasien'] = $this->pasienModel->findAll();
-        $data['karyawan'] = $this->karyawanModel->getKaryawan();
         $data['users'] = $this->penggunaModel->getPengguna();
         // dd($data);
         $data['title'] = 'Dashboard SISPUS';

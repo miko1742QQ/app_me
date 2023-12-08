@@ -26,39 +26,13 @@ class DaftarPenggunaModel extends Model
         'deleted_at'
     ];
 
-    public function getUsers()
-    {
-        return $this->db->table('users')
-            ->orderBy('id', 'ASC')
-            ->get()->getResultArray();
-    }
-
     public function getPengguna()
     {
         return $this->db->table('users')
-            ->join('auth_groups', 'auth_groups.id=users.id_role')
+            ->distinct()
+            ->select('users.id, karyawan.nama_karyawan, users.username, role.nama_role, users.active')
+            ->join('role', 'role.id_role=users.id_role')
             ->join('karyawan', 'karyawan.nik=users.nik')
             ->get()->getResultArray();
-    }
-
-    public function getPenggunaPerID($id_pengguna)
-    {
-        return $this->db->table('users')
-            ->join('auth_groups', 'auth_groups.id=users.id_role')
-            ->join('karyawan', 'karyawan.nik=users.nik')
-            ->where('users.nik', $id_pengguna)
-            ->get()->getResultArray();
-    }
-
-    function getLevel()
-    {
-        $query = $this->db->query('SELECT * FROM auth_groups');
-        return $query->getResultArray();
-    }
-
-    function getKaryawan()
-    {
-        $query = $this->db->query('SELECT * FROM karyawan');
-        return $query->getResultArray();
     }
 }

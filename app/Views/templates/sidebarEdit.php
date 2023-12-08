@@ -16,7 +16,7 @@
     <div class="menu-inner-shadow"></div>
 
     <ul class="menu-inner py-1">
-        <?php if (in_groups('Admin')) : ?>
+        <?php if (in_groups('Administrator') || in_groups('Pimpinan')) : ?>
             <!-- Dashboards -->
             <li class="menu-item">
                 <a href="../dashboard" class="menu-link text-white">
@@ -39,6 +39,11 @@
                     <li class="menu-item">
                         <a href="../daftar_poli" class="menu-link text-white">
                             <div data-i18n="Poli">Poli</div>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="../daftar_obat" class="menu-link text-white">
+                            <div data-i18n="Obat">Obat</div>
                         </a>
                     </li>
                     <li class="menu-item">
@@ -83,12 +88,19 @@
             <!-- Dashboards -->
         <?php endif ?>
 
-        <?php if (in_groups('Pimpinan')) : ?>
+        <?php if (in_groups('Petugas')) : ?>
             <!-- Dashboards -->
             <li class="menu-item">
                 <a href="../dashboard" class="menu-link text-white">
                     <i class="menu-icon tf-icons ti ti-smart-home"></i>
                     <div data-i18n="Dashboard">Dashboard</div>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="../nomor_antrian" class="menu-link text-white">
+                    <i class="menu-icon tf-icons ti ti-ticket"></i>
+                    <div data-i18n="No. Antrian">No. Antrian</div>
                 </a>
             </li>
             <!-- Dashboards -->
@@ -100,6 +112,38 @@
                 <a href="../dashboard" class="menu-link text-white">
                     <i class="menu-icon tf-icons ti ti-smart-home"></i>
                     <div data-i18n="Dashboard">Dashboard</div>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="../hapus_nomorantrian" class="menu-link text-white">
+                    <i class="menu-icon tf-icons ti ti-ticket"></i>
+                    <div data-i18n="No. Antrian Poli">No. Antrian Poli</div>
+                </a>
+            </li>
+            <!-- Dashboards -->
+        <?php endif ?>
+
+        <?php if (in_groups('Kasir')) : ?>
+            <!-- Dashboards -->
+            <li class="menu-item">
+                <a href="../dashboard" class="menu-link text-white">
+                    <i class="menu-icon tf-icons ti ti-smart-home"></i>
+                    <div data-i18n="Dashboard">Dashboard</div>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="../daftar_transaksi" class="menu-link text-white">
+                    <i class="menu-icon tf-icons ti ti-receipt"></i>
+                    <div data-i18n="Transaksi">Transaksi</div>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="../laporan_transaksi" class="menu-link text-white">
+                    <i class="menu-icon tf-icons ti ti-printer"></i>
+                    <div data-i18n="Laporan Transaksi">Laporan Transaksi</div>
                 </a>
             </li>
             <!-- Dashboards -->

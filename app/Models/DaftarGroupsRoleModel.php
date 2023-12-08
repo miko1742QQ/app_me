@@ -16,12 +16,6 @@ class DaftarGroupsRoleModel extends Model
         'user_id',
     ];
 
-    public function getGroupsRole()
-    {
-        return $this->db->table('auth_groups_users')
-            ->get()->getResultArray();
-    }
-
     public function getGroupsRolePerID($id = null)
     {
         return $this->db->table('auth_groups_users')

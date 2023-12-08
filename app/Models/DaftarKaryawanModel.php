@@ -14,10 +14,4 @@ class DaftarKaryawanModel extends Model
         'nik',
         'nama_karyawan'
     ];
-
-    public function getKaryawan()
-    {
-        return $this->db->table('karyawan')
-            ->get()->getResultArray();
-    }
 }

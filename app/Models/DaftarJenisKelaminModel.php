@@ -13,10 +13,4 @@ class DaftarJenisKelaminModel extends Model
         'id',
         'nama_jenis'
     ];
-
-    public function getJenkel()
-    {
-        return $this->db->table('jeniskelamin')
-            ->get()->getResultArray();
-    }
 }

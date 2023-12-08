@@ -24,14 +24,4 @@ class DaftarNomorAntrianModel extends Model
             ->get()
             ->getResultArray();
     }
-
-    // public function pencarian($kunci)
-    // {
-    //     return $this->db->table('no_antrian')
-    //         ->distinct()
-    //         ->select('no_antrian.id, no_antrian.tanggal, no_antrian.nomor_antrian, poli.nama_poli, poli.kode_poli')
-    //         ->join('poli', 'poli.id=no_antrian.id_poli')
-    //         ->get()
-    //         ->getResultArray();
-    // }
 }
