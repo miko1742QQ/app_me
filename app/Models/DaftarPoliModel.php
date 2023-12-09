@@ -13,5 +13,8 @@ class DaftarPoliModel extends Model
         'kode_poli',
         'nama_poli',
         'kapasitas',
+        'antrian_waiting',
+        'antrian_proses',
+        'antrian_end',
     ];
 }

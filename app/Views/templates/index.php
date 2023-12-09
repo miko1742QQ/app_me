@@ -11,7 +11,7 @@
   <meta name="description" content="" />
 
   <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="<?= base_url(); ?>../../logopuskesmas.png" alt="" style="width: 20px;" />
+  <link rel="icon" type="image/x-icon" href="<?= base_url(); ?>../../logopuskesmas.png" alt="Your Description Here" style="width: 20px;" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -39,6 +39,7 @@
   <link rel="stylesheet" href="<?= base_url(); ?>../../assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
   <!-- Select2 -->
   <link rel="stylesheet" href="<?= base_url(); ?>../../assets/vendor/libs/select2/css/select2.min.css">
+
   <!-- Page CSS -->
   <link rel="stylesheet" href="<?= base_url(); ?>../../assets/vendor/css/pages/cards-advance.css" />
 
@@ -50,6 +51,7 @@
   <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
   <script src="<?= base_url(); ?>../../assets/js/config.js"></script>
 
+  <!-- jQuery -->
   <script src="<?= base_url(); ?>../../assets/js/jquery-3.4.1.min.js"></script>
 </head>
 
@@ -96,7 +98,6 @@
 
   <!-- Core JS -->
   <!-- build:js assets/vendor/js/core.js -->
-
   <script src="<?= base_url(); ?>../../assets/vendor/libs/jquery/jquery.js"></script>
   <script src="<?= base_url(); ?>../../assets/vendor/libs/popper/popper.js"></script>
   <script src="<?= base_url(); ?>../../assets/vendor/js/bootstrap.js"></script>
@@ -107,6 +108,7 @@
   <script src="<?= base_url(); ?>../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
   <script src="<?= base_url(); ?>../../assets/vendor/js/menu.js"></script>
   <!-- endbuild -->
+
   <!-- Select2 -->
   <script src="<?= base_url(); ?>../../assets/vendor/libs/select2/js/select2.full.min.js"></script>
 
@@ -130,77 +132,31 @@
 
   <script>
     $(document).ready(function() {
-      $('#datatabelpasien').DataTable({
+      $('#datatabel').DataTable({
         "lengthMenu": [
           [25, 50, 75, 100, -1],
           [25, 50, 75, 100, "All"]
         ]
       });
-    });
 
-    $(document).ready(function() {
-      $('#datatabelpoli').DataTable({
-        "lengthMenu": [
-          [25, 50, 75, 100, -1],
-          [25, 50, 75, 100, "All"]
-        ]
-      });
-    });
-
-    $(document).ready(function() {
-      $('#datatabelkaryawan').DataTable({
-        "lengthMenu": [
-          [25, 50, 75, 100, -1],
-          [25, 50, 75, 100, "All"]
-        ]
-      });
-    });
-
-    $(document).ready(function() {
-      $('#datatabelpengguna').DataTable({
-        "lengthMenu": [
-          [25, 50, 75, 100, -1],
-          [25, 50, 75, 100, "All"]
-        ]
-      });
-    });
-
-    $(document).ready(function() {
       $('#datatabelobat').DataTable({
         "lengthMenu": [
-          [10, 25, 50, 100, -1],
-          [10, 25, 50, 100, "All"]
+          [25, 50, 75, 100, -1],
+          [25, 50, 75, 100, "All"]
         ]
       });
-    });
 
-    $(document).ready(function() {
-      $('#datatabellaporan').DataTable({
-        "lengthMenu": [
-          [10, 25, 50, 100, -1],
-          [10, 25, 50, 100, "All"]
-        ]
-      });
-    });
-
-    $(document).ready(function() {
-      $('#datatabeldetaillaporan').DataTable({
-        "lengthMenu": [
-          [10, 25, 50, 100, -1],
-          [10, 25, 50, 100, "All"]
-        ]
-      });
+      $('#jenkelold').select2();
+      $('#jenkel').select2();
+      $('#jenispoli').select2();
+      $('#id_pasien').select2();
+      $('#id_obat').select2();
     });
 
     function confirmToDelete(el) {
       $("#delete-button").attr("href", el.dataset.href);
       $("#confirm-dialog").modal('show');
     }
-
-    $(document).ready(function() {
-      $('#jenkelold').select2();
-      $('#jenkel').select2();
-    });
   </script>
 </body>
 

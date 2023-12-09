@@ -14,7 +14,7 @@
                         </span>
                     </a>
                 </div>
-                <h4 class="mb-1" align="center">Welcome to SISPUS <br>Sistem Informasi Puskesmas X</h4>
+                <h4 class="mb-1" align="center">Welcome to SISPUS <br>Sistem Informasi Puskesmas</h4>
                 <p class="mb-4" align="center">Please sign-in to your account and start the adventure</p>
 
                 <?= view('Myth\Auth\Views\_message_block') ?>
@@ -66,7 +66,7 @@
 
                     <!-- <button type="submit" class="btn btn-primary btn-block"><?= lang('Auth.loginAction') ?></button> -->
                     <div class="mb-3">
-                        <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
+                        <button class="btn btn-success d-grid w-100" type="submit">Sign in</button>
                     </div>
                 </form>
             </div>
