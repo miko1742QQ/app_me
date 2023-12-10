@@ -2,28 +2,63 @@
 
 <?= $this->section('page-content'); ?>
 
-<div class="container">
-    <div class="card" id="nomor-antrian-card">
-        <div id="nomor-antrian-terakhir-container"></div>
-        <div id="nomor-antrian-berjalan-container"></div>
-    </div>
-</div>
-
-<div class="containerNomorAntrian">
-    <?php foreach ($poli as $p) : ?>
-        <div class="cardNomorAntrian" data-id="<?= $p['id'] ?>">
-            <h3 class="text-white"><?= $p['nama_poli'] ?></h3>
-            <p>Kode Poli: <?= $p['kode_poli'] ?></p>
-            <p>Kapasitas: <?= $p['kapasitas'] ?></p>
-            <button class="ambil-nomor-btn">Ambil Nomor Antrian</button>
+<div class="d-flex gap-4 justify-content-between p-3">
+    <div class="containerBidangPoli" id="containerBidangPoli">
+        <div class="containerBranch">
+            <h2>SELAMAT DATANG DI PUSKESMAS X KOTA PADANG</h2>
+            <h3>Jl. Lubuk Begalung</h3>
         </div>
-    <?php endforeach; ?>
+        <?php foreach ($poli as $p) : ?>
+            <div class="cardNomorAntrian" data-id="<?= $p['id'] ?>">
+                <h3><?= $p['nama_poli'] ?></h3>
+                <button class="ambilnomor">Ambil Nomor Antrian</button>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <div class="containerNomorAntrian" id="containerNomorAntrian">
+        <div class="header-container">
+            <img src="../../logopuskesmas.png" alt="" width="100">
+            <div class="info-container">
+                <span id="tanggal"></span>
+                <span id="waktu"></span>
+            </div>
+        </div>
+
+        <div class="container_nomorantrianberjalan" id="container_nomorantrianberjalan"></div>
+        <div class="container_nomorselanjutnya" id="container_nomorselanjutnya"></div>
+    </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const ambilNomorBtns = document.querySelectorAll('.ambil-nomor-btn');
-        const nomorAntrianBerjalanContainer = document.getElementById('nomor-antrian-berjalan-container');
+        const ambilNomorBtns = document.querySelectorAll('.ambilnomor');
+        const nomorAntrianBerjalanContainer = document.getElementById('container_nomorantrianberjalan');
+        const nomorAntrianSelanjutnyaContainer = document.getElementById('container_nomorselanjutnya');
+        var tanggalElement = document.getElementById('tanggal');
+        var waktuElement = document.getElementById('waktu');
+
+        function updateWaktu() {
+            var sekarang = new Date();
+
+            var tanggal = sekarang.toLocaleDateString();
+            var waktu = sekarang.toLocaleTimeString();
+
+            tanggalElement.textContent = 'Tanggal: ' + tanggal;
+            waktuElement.textContent = 'Waktu: ' + waktu;
+        }
+
+        // Pertama kali, panggil fungsi pembaruan waktu
+        updateWaktu();
+
+        // Selanjutnya, atur pembaruan waktu setiap detik
+        setInterval(updateWaktu, 1000);
+
+        // Restore data from sessionStorage
+        const storedNomorAntrianBerjalan = sessionStorage.getItem('nomorAntrianBerjalan');
+        const storedNomorAntrianSelanjutnya = sessionStorage.getItem('nomorAntrianSelanjutnya');
+        nomorAntrianBerjalanContainer.innerHTML = storedNomorAntrianBerjalan || '';
+        nomorAntrianSelanjutnyaContainer.innerHTML = storedNomorAntrianSelanjutnya || '';
 
         nomorAntrianBerjalanContainer.addEventListener('click', function(event) {
             if (event.target.classList.contains('cetak-btn')) {
@@ -41,43 +76,32 @@
                     const response = await fetch('<?= base_url('ambil-nomor-antrian/') ?>' + parseInt(idPoli));
                     const data = await response.json();
 
-                    console.log('Data yang diterima dari server:', data);
-
                     if (data.error !== undefined) {
                         const cardContainer = btn.closest('.cardNomorAntrian');
                         cardContainer.innerHTML += `
                             <div class="error-container">
-                                <p class="error-message">${data.error}</p>
+                                <p class="css_cetak text-danger font-weight-bold">${data.error}</p>
                             </div>
                         `;
                     } else {
-                        console.log('Data yang akan ditampilkan:', data);
-                        const lastProcessedQueueNumber = data.last_processed_queue_number;
-
-                        nomorAntrianBerjalanContainer.innerHTML =
-                            `
-                            <div class="nomor-antrian-container">
-                                <div class="d-flex">
-                                    <div class="card">
-                                        <span class="nomor-antrian-title text-white h-100">Nomor Antrian <br> ${data.nama_poli}</span>
-                                        <p class="nomor-antrian-large-text">${data.nomor_antrian}</p>
-                                    </div>
-
-                                    <div class="card">
-                                        <span class="nomor-antrian-title text-white h-100">Nomor Antrian Selanjutnya<br> ${data.nama_poli}</span>
-                                        <p class="nomor-antrian-large-text">${data.nomor_antrianselanjutnya}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            ` +
+                        nomorAntrianBerjalanContainer.innerHTML = `
+                            <div class="container_nomorantrianberjalan">
+                            <span>Nomor Antrian</span>
+                            <span style="font-size: 24px">${data.nama_poli}</span>
+                            <span style="font-size: 58px;">${data.nomor_antrian}</span>
+                            </div>` +
                             `<button class="css_cetak cetak-btn" data-nama="${data.nama_poli}" data-nomor="${data.nomor_antrian}">Cetak Nomor Antrian</button>`;
 
-                        const nomorAntrianSebelumnya = document.querySelector('.nomor-antrian-sebelumnya');
-                        if (nomorAntrianSebelumnya) {
-                            nomorAntrianSebelumnya.remove();
-                        }
+                        nomorAntrianSelanjutnyaContainer.innerHTML = `
+                            <div class="container_nomorselanjutnya">
+                            <span>Antrian Selanjutnya</span>
+                            <span style="font-size: 24px">${data.nama_poli}</span>
+                            <span style="font-size: 58px;">${data.nomor_antrianselanjutnya}</span>
+                            </div>`;
 
-                        nomorAntrianBerjalanContainer.classList.add('nomor-antrian-selesai');
+                        // Store data in sessionStorage
+                        sessionStorage.setItem('nomorAntrianBerjalan', nomorAntrianBerjalanContainer.innerHTML);
+                        sessionStorage.setItem('nomorAntrianSelanjutnya', nomorAntrianSelanjutnyaContainer.innerHTML);
                     }
                 } catch (error) {
                     console.error('Error parsing JSON:', error);
@@ -92,154 +116,4 @@
         }
     });
 </script>
-
-<style>
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-    }
-
-    .containerNomorAntrian {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-        width: 100%;
-    }
-
-    .nomor-antrian-large-text {
-        font-size: 60px;
-    }
-
-    .nomor-antrian-title {
-        font-size: 25px;
-    }
-
-    .card {
-        width: 48%;
-        box-sizing: border-box;
-        margin: 10px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background: linear-gradient(45deg, #4caf50, #00796b);
-        color: #fff;
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.3s ease-in-out;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        text-align: center;
-    }
-
-    .card:hover {
-        transform: scale(1.05);
-    }
-
-    .card::before {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
-        top: 0;
-        left: 0;
-        z-index: -1;
-        border-radius: 10px;
-    }
-
-    .cardNomorAntrian {
-        margin: 10px;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background: linear-gradient(45deg, #4caf50, #00796b);
-        color: #fff;
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.3s ease-in-out;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        text-align: center;
-    }
-
-    .cardNomorAntrian:hover {
-        transform: scale(1.05);
-    }
-
-    .cardNomorAntrian::before {
-        content: '';
-        position: absolute;
-        height: 100%;
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
-        top: 0;
-        left: 0;
-        z-index: -1;
-        border-radius: 10px;
-    }
-
-    .css_cetak {
-        background-color: #fff;
-        color: black;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .css_cetak:hover {
-        background-color: #00796b;
-        transform: scale(1.1);
-    }
-
-    .ambil-nomor-btn {
-        background-color: #fff;
-        color: black;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .ambil-nomor-btn:hover {
-        background-color: #00796b;
-        transform: scale(1.1);
-    }
-
-    .error-container {
-        background-color: #ffebee;
-        /* Warna latar belakang untuk pesan kesalahan */
-        border: 1px solid #e57373;
-        /* Warna batas untuk pesan kesalahan */
-        padding: 10px;
-        /* Ruang dalam untuk memberikan jarak dari batas */
-        border-radius: 5px;
-        /* Membuat sudut elemen menjadi sedikit melengkung */
-        margin-top: 10px;
-        /* Memberikan jarak dari elemen di atasnya */
-    }
-
-    .error-message {
-        color: #d32f2f;
-        /* Warna teks untuk pesan kesalahan */
-        font-size: 16px;
-        /* Ukuran font untuk pesan kesalahan */
-        font-weight: bold;
-        /* Menjadikan teks pesan kesalahan tebal */
-        margin: 0;
-        /* Menghapus margin bawaan dari elemen p */
-    }
-
-    @media (min-width: 768px) {
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .cardNomorAntrian {
-            width: 48%;
-        }
-    }
-</style>
-
 <?= $this->endSection(); ?>

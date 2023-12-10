@@ -70,10 +70,15 @@ class DaftarNoAntrianController extends BaseController
             return redirect()->to(base_url())->with('error', 'Nomor antrian atau ID poli tidak valid.');
         }
 
+        $poli = $this->poliModel->find($id);
+        $antrian_waiting = $poli['antrian_waiting'] - 1;
+
         // Data yang akan diupdate
         $data = [
             'antrian_end' => $nomor_antrian,
+            'antrian_waiting' => $antrian_waiting
         ];
+
 
         // Update data di dalam model
         if ($this->poliModel->update($id, $data)) {
@@ -90,6 +95,12 @@ class DaftarNoAntrianController extends BaseController
         // Mendapatkan tanggal saat ini
         $todayDate = date('Y-m-d');
         $poli = $this->poliModel->find($id_poli);
+
+        // Mengecek kapasitas poli
+        if ($poli['kapasitas'] <= $poli['antrian_waiting'] + $poli['antrian_proses'] - $poli['antrian_end']) {
+            // Menampilkan alert kapasitas penuh jika kapasitas sudah mencapai batas
+            return $this->response->setJSON(['error' => 'Kapasitas Poli Sudah Penuh']);
+        }
 
         // Mencari entri antrian terbaru untuk poli dan tanggal saat ini
         $latestAntrian = $this->antrianModel

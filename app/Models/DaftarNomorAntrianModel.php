@@ -34,6 +34,7 @@ class DaftarNomorAntrianModel extends Model
             ->join('poli', 'poli.id=no_antrian.id_poli')
             ->where('poli.kode_poli', $jenisPoli)
             ->where('no_antrian.status', 'waiting')
+            ->orderBy('no_antrian.nomor_antrian', 'ASC')
             ->get()
             ->getResultArray();
     }
