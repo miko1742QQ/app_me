@@ -32,6 +32,7 @@ class DaftarNoAntrianController extends BaseController
         $data['poli'] = $this->poliModel->findAll();
         $data['pasien'] = $this->pasienModel->findAll();
         $data['obat'] = $this->obatModel->findAll();
+        $data['dataAntrian'] = $this->antrianModel->getData1();
 
         foreach ($data['poli'] as &$poli) {
             $latestAntrian = $this->antrianModel->where('id_poli', $poli['id'])->orderBy('id', 'DESC')->first();
@@ -62,6 +63,28 @@ class DaftarNoAntrianController extends BaseController
         return $this->response->setJSON($data);
     }
 
+    public function fetchNomorAntrianSelanjutnya()
+    {
+        $data = $this->antrianModel->getData1();
+
+        // Kembalikan data dalam format JSON
+        return $this->response->setJSON($data);
+    }
+
+    public function fetchKapasitas()
+    {
+        $data = $this->antrianModel->getData1();
+        $kapasitas = $data['kapasitas'];
+        $antrian_waiting = $data['antrian_waiting'];
+
+        $responseData = [
+            'kapasitas' => $kapasitas,
+            'antrian_waiting' => $antrian_waiting,
+        ];
+        // Kembalikan data dalam format JSON
+        return $this->response->setJSON($responseData);
+    }
+
     public function antrian_selesai($nomor_antrian = null, $id = null)
     {
         // Pastikan nomor_antrian dan id_poli tidak kosong
@@ -71,7 +94,7 @@ class DaftarNoAntrianController extends BaseController
         }
 
         $poli = $this->poliModel->find($id);
-        $antrian_waiting = $poli['antrian_waiting'] - 1;
+        $antrian_waiting = $poli['antrian_waiting'] - ($poli['antrian_end'] + 1);
 
         // Data yang akan diupdate
         $data = [
@@ -96,51 +119,51 @@ class DaftarNoAntrianController extends BaseController
         $todayDate = date('Y-m-d');
         $poli = $this->poliModel->find($id_poli);
 
-        // Mengecek kapasitas poli
         if ($poli['kapasitas'] <= $poli['antrian_waiting'] + $poli['antrian_proses'] - $poli['antrian_end']) {
             // Menampilkan alert kapasitas penuh jika kapasitas sudah mencapai batas
             return $this->response->setJSON(['error' => 'Kapasitas Poli Sudah Penuh']);
+        } else {
+            // Mencari entri antrian terbaru untuk poli dan tanggal saat ini
+            $latestAntrian = $this->antrianModel
+                ->where('id_poli', $id_poli)
+                ->where('tanggal', $todayDate)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            // Menentukan nomor antrian baru
+            $jumlahAntrian = $latestAntrian ? $latestAntrian['nomor_antrian'] + 1 : 1;
+
+            // Mencari entri antrian terbaru untuk poli dan tanggal saat ini
+            $AntrianSelanjutnya = $this->antrianModel
+                ->where('id_poli', $id_poli)
+                ->where('status', 'end')
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            // Menentukan nomor antrian selanjutnya
+            $jumlahAntrianSelanjutnya = $AntrianSelanjutnya ? $AntrianSelanjutnya['nomor_antrian'] + 1 : 1;
+
+            // Data untuk disisipkan ke dalam tabel no_antrian
+            $data = [
+                'tanggal' => $todayDate,
+                'nomor_antrian' => $jumlahAntrian,
+                'id_poli' => $id_poli,
+                'status' => 'waiting',
+            ];
+
+            // Menyisipkan data ke dalam tabel no_antrian
+            $this->antrianModel->insert($data);
+
+            // Menyiapkan data untuk respons JSON atau tindakan selanjutnya
+            $responseData = [
+                'idPoli' => $poli,
+                'nomor_antrian' => $jumlahAntrian,
+                'nomor_antrianselanjutnya' => $jumlahAntrianSelanjutnya,
+                'nama_poli' => $poli['nama_poli'],  // Sesuaikan dengan properti yang sesuai
+            ];
+
+            // Mengembalikan respons dalam format JSON
+            return $this->response->setJSON($responseData);
         }
-
-        // Mencari entri antrian terbaru untuk poli dan tanggal saat ini
-        $latestAntrian = $this->antrianModel
-            ->where('id_poli', $id_poli)
-            ->where('tanggal', $todayDate)
-            ->orderBy('id', 'DESC')
-            ->first();
-
-        // Menentukan nomor antrian baru
-        $jumlahAntrian = $latestAntrian ? $latestAntrian['nomor_antrian'] + 1 : 1;
-
-        // Mencari entri antrian terbaru untuk poli dan tanggal saat ini
-        $AntrianSelanjutnya = $this->antrianModel
-            ->where('id_poli', $id_poli)
-            ->where('status', 'end')
-            ->orderBy('id', 'DESC')
-            ->first();
-
-        // Menentukan nomor antrian selanjutnya
-        $jumlahAntrianSelanjutnya = $AntrianSelanjutnya ? $AntrianSelanjutnya['nomor_antrian'] + 1 : 1;
-
-        // Data untuk disisipkan ke dalam tabel no_antrian
-        $data = [
-            'tanggal' => $todayDate,
-            'nomor_antrian' => $jumlahAntrian,
-            'id_poli' => $id_poli,
-            'status' => 'waiting',
-        ];
-
-        // Menyisipkan data ke dalam tabel no_antrian
-        $this->antrianModel->insert($data);
-
-        // Menyiapkan data untuk respons JSON atau tindakan selanjutnya
-        $responseData = [
-            'nomor_antrian' => $jumlahAntrian,
-            'nomor_antrianselanjutnya' => $jumlahAntrianSelanjutnya,
-            'nama_poli' => $poli['nama_poli'],  // Sesuaikan dengan properti yang sesuai
-        ];
-
-        // Mengembalikan respons dalam format JSON
-        return $this->response->setJSON($responseData);
     }
 }

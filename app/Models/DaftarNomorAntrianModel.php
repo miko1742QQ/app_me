@@ -26,6 +26,14 @@ class DaftarNomorAntrianModel extends Model
             ->getResultArray();
     }
 
+    public function getData1()
+    {
+        return $this->db->table('poli')
+            ->get()
+            ->getResultArray();
+    }
+
+
     public function getDataByJenisPoli($jenisPoli)
     {
         return $this->db->table('no_antrian')
