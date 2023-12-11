@@ -43,7 +43,7 @@
 
         <!-- Basic Layout -->
         <div class="table-responsive margin-tb">
-            <table class="table table-hover display nowrap w-100" id="datatabeldetaillaporan" cellspacing="0">
+            <table class="table table-hover display nowrap w-100" id="datatabel" cellspacing="0">
                 <thead>
                     <tr class="first even" style="text-shadow: none; cursor: pointer;">
                         <th style="text-align: center; vertical-align: middle; margin: 5px; padding: 7px;">NO</th>

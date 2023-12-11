@@ -71,9 +71,12 @@ $routes->get('/delete_pengguna/(:num)', 'DaftarPenggunaController::delete_penggu
 
 // Nomor Antrian
 $routes->get('/nomor_antrian', 'DaftarNoAntrianController::index', ['filter' => 'login']);
-$routes->get('/hapus_nomorantrian', 'DaftarNoAntrianController::hapus_nomorantrian', ['filter' => 'login']);
+$routes->get('/nomorantrian_poli', 'DaftarNoAntrianController::nomorantrian_poli', ['filter' => 'login']);
 $routes->get('/ambil-nomor-antrian/(:segment)', 'DaftarNoAntrianController::ambilNomorAntrian/$1', ['filter' => 'login']);
-$routes->get('/delete_antrian/(:num)', 'DaftarNoAntrianController::delete_antrian/$1', ['filter' => 'login']);
+$routes->get('/antrian_selesai/(:num)/(:num)', 'DaftarNoAntrianController::antrian_selesai/$1/$2', ['filter' => 'login']);
+$routes->post('/fetchDataByJenisPoli', 'DaftarNoAntrianController::fetchDataByJenisPoli', ['filter' => 'login']);
+$routes->get('/fetch-nomor-antrian-selanjutnya', 'DaftarNoAntrianController::fetchNomorAntrianSelanjutnya');
+$routes->get('/fetch-kapasitas', 'DaftarNoAntrianController::fetchKapasitas');
 
 // Transaksi
 $routes->get('/daftar_transaksi', 'DaftarTransaksiController::index', ['filter' => 'login']);

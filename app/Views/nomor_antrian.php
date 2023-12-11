@@ -2,141 +2,182 @@
 
 <?= $this->section('page-content'); ?>
 
-<div class="authentication-wrapper authentication-cover authentication-bg bg-success" style="width: 100%;">
-    <div class="authentication-inner row">
-        <div class="d-flex col-12 col-lg-12 p-sm-5 p-4">
-            <div class="w-px-800 mx-auto text-center item-center">
-                <h3 class="mb-4 text-white" align="center"><b>Silahkan pilih nomor antrian anda dibawah ini</b></h3>
+<div class="row">
+    <div class="col-lg-9 col-xl-9 col-md-9 col-xs-12 col-sm-12 col-12">
+        <div class="containerBranch">
+            <span>SELAMAT DATANG DI PUSKESMAS X KOTA PADANG</span>
+            <span>Jl. Lubuk Begalung</span>
+        </div>
 
-                <div class="justify-content-center align-content-center">
-                    <div class="d-flex flex-wrap mb-4" id="poli-container">
-                        <?php foreach ($poli as $row) : ?>
-                            <div class="card" data-id="<?= $row['id'] ?>">
-                                <h3><?= $row['nama_poli'] ?></h3>
-                                <p>Kapasitas: <?= $row['kapasitas'] ?></p>
-                                <button class="ambil-nomor-btn btn-success">Ambil Nomor Antrian</button>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+        <div class="containerBidangPoli" id="containerBidangPoli">
+            <?php foreach ($poli as $p) : ?>
+                <div class="cardNomorAntrian" data-id="<?= $p['id'] ?>">
+                    <span><?= $p['nama_poli'] ?></span>
+                    <button class="ambilnomor">Ambil Nomor Antrian</button>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
 
-                    <div id="nomor-antrian-berjalan-container" class="text-white" />
+    <div class="col-lg-3 col-xl-3 col-md-3 col-xs-12 col-sm-12 col-12">
+        <div class="containerNomorAntrian" id="containerNomorAntrian">
+            <div class="header-container">
+                <img src="../../logopuskesmas.png" alt="" width="100">
+                <div class="info-container">
+                    <span id="tanggal"></span>
+                    <span id="waktu"></span>
                 </div>
             </div>
+
+            <div class="row container_dataAntrian">
+                <div class="col-lg-12 col-xl-12 col-md-12 col-xs-12 col-sm-12 col-12">
+                    <div class="table-responsive">
+                        <table class="table" id="datatabel1">
+                            <thead>
+                                <tr>
+                                    <th>BIDANG POLI</th>
+                                    <th>ANTRIAN SELANJUTNYA</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- Data tabel akan diisi menggunakan JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container_nomorantrianberjalan" id="container_nomorantrianberjalan"></div>
         </div>
-        <!-- /Login -->
     </div>
 </div>
 
-
-<style>
-    /* public/css/styles.css */
-    .card-container {
-        display: flex;
-        flex-wrap: wrap;
-        text-align: center;
-    }
-
-    .card {
-        width: 100%;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin: 5px;
-        padding: 10px;
-        /* Mengisi ruang yang tersedia secara merata */
-    }
-
-    .card img {
-        width: 100%;
-        height: auto;
-    }
-
-    .card-body {
-        width: 100%;
-    }
-
-    .card-title {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-    }
-
-    .card-text {
-        color: #666;
-    }
-
-    .btn-success {
-        background-color: green;
-        color: #fff;
-        text-decoration: none;
-        padding: 10px 15px;
-        border-radius: 5px;
-        display: inline-block;
-    }
-
-    /* Media query untuk tampilan mobile */
-    @media screen and (max-width: 767px) {
-        .card {
-            width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            /* Setiap kartu menjadi 100% lebar pada tampilan mobile */
-        }
-    }
-
-    /* Media query untuk tampilan desktop */
-    @media screen and (min-width: 768px) {
-        .card {
-            width: calc(33.333% - 20px);
-            /* Mengatur lebar kartu pada tampilan desktop */
-        }
-    }
-</style>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const ambilNomorBtns = document.querySelectorAll('.ambil-nomor-btn');
-        const nomorAntrianBerjalanContainer = document.getElementById('nomor-antrian-berjalan-container');
-        const nomorAntrianTerakhirContainer = document.getElementById('nomor-antrian-terakhir-container');
+        const ambilNomorBtns = document.querySelectorAll('.ambilnomor');
+        const nomorAntrianBerjalanContainer = document.getElementById('container_nomorantrianberjalan');
+        var tanggalElement = document.getElementById('tanggal');
+        var waktuElement = document.getElementById('waktu');
+
+        // // Fungsi untuk memeriksa kapasitas setiap detik
+        // function checkKapasitas() {
+        //     fetch('fetch-kapasitas') // Ganti dengan URL atau metode lain yang sesuai
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             ambilNomorBtns.forEach(btn => {
+        //                 const idPoli = btn.closest('.cardNomorAntrian').dataset.id;
+        //                 const kapasitas = data.find(item => item.id === parseInt(idPoli)).kapasitas;
+        //                 const antrian_waiting = data.find(item => item.id === parseInt(idPoli)).antrian_waiting;
+
+        //                 // Aktifkan atau nonaktifkan tombol berdasarkan kapasitas
+        //                 btn.disabled = kapasitas <= antrian_waiting;
+        //             });
+        //         })
+        //         .catch(error => console.error('Error fetching kapasitas:', error));
+        // }
+
+        // // Pertama kali, panggil fungsi pemeriksa kapasitas
+        // checkKapasitas();
+
+        // // Selanjutnya, atur pembaruan kapasitas setiap detik
+        // setInterval(checkKapasitas, 1000);
+
+        function updateTableData() {
+            fetch('fetch-nomor-antrian-selanjutnya') // Ganti dengan URL atau metode lain yang sesuai
+                .then(response => response.json())
+                .then(data => {
+                    // Hapus data lama dari tabel
+                    const tableBody = document.querySelector('#datatabel1 tbody');
+                    tableBody.innerHTML = '';
+
+                    // Tambahkan data baru ke tabel
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td>${item.nama_poli}</td><td>${parseInt(item.antrian_end) + 1}</td>`;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        updateTableData();
+
+        // Setel interval untuk memperbarui data setiap detik
+        setInterval(updateTableData, 1000);
+
+        function updateWaktu() {
+            var sekarang = new Date();
+
+            var tanggal = sekarang.toLocaleDateString();
+            var waktu = sekarang.toLocaleTimeString();
+
+            tanggalElement.textContent = 'Tanggal: ' + tanggal;
+            waktuElement.textContent = 'Waktu: ' + waktu;
+        }
+
+        // Pertama kali, panggil fungsi pembaruan waktu
+        updateWaktu();
+
+        // Selanjutnya, atur pembaruan waktu setiap detik
+        setInterval(updateWaktu, 1000);
+
+        // Restore data from sessionStorage
+        const storedNomorAntrianBerjalan = sessionStorage.getItem('nomorAntrianBerjalan');
+        nomorAntrianBerjalanContainer.innerHTML = storedNomorAntrianBerjalan || '';
+
+        nomorAntrianBerjalanContainer.addEventListener('click', function(event) {
+            if (event.target.classList.contains('cetak-btn')) {
+                const namaPoli = event.target.dataset.nama;
+                const nomorAntrian = event.target.dataset.nomor;
+                ambilNomorAntrian(namaPoli, nomorAntrian);
+            }
+        });
 
         ambilNomorBtns.forEach(btn => {
             btn.addEventListener('click', async function() {
-                const idPoli = btn.closest('.card').dataset.id;
+                const idPoli = btn.closest('.cardNomorAntrian').dataset.id;
+
                 try {
                     const response = await fetch('<?= base_url('ambil-nomor-antrian/') ?>' + parseInt(idPoli));
                     const data = await response.json();
 
-                    if (data.error == undefined) {
-                        // Tampilkan nomor antrian berjalan
-                        nomorAntrianBerjalanContainer.innerHTML =
-                            `<h2 class="text-white">Nomor Antrian<br> ${data.nama_poli}<br> ${data.nomor_antrian}</h2>` +
-                            `<button class="btn-success" onclick="ambilNomorAntrian('${data.nama_poli}', ${data.nomor_antrian})">Cetak</button>`;
-
-                        // Hapus elemen nomor antrian yang telah dipanggil sebelumnya
-                        const nomorAntrianSebelumnya = document.querySelector('.nomor-antrian-sebelumnya');
-                        if (nomorAntrianSebelumnya) {
-                            nomorAntrianSebelumnya.remove();
-                        }
-
-                        // Tambahkan class 'nomor-antrian-selesai' pada elemen nomor antrian yang telah selesai
-                        nomorAntrianBerjalanContainer.classList.add('nomor-antrian-selesai');
+                    if (data.error !== undefined) {
+                        console.log(JSON.stringify(data.error))
+                        const cardContainer = btn.closest('.cardNomorAntrian');
+                        cardContainer.innerHTML += `
+                        <div class="error-container">
+                            <p class="ambilnomor text-danger font-weight-bold">${data.error}</p>
+                        </div>
+                    `;
                     } else {
-                        nomorAntrianBerjalanContainer.innerHTML =
-                            `<h2 class="text-white"></h2>`;
-                        alert('Bidang Poli Sedang Penuh');
+                        nomorAntrianBerjalanContainer.innerHTML = `
+                        <div class="container_nomorantrianberjalan">
+                            <span>Nomor Antrian</span>
+                            <span style="font-size: 24px">${data.nama_poli}</span>
+                            <span style="font-size: 58px;">${data.nomor_antrian}</span>
+                        </div>` +
+                            `<button class="css_cetak cetak-btn" data-nama="${data.nama_poli}" data-nomor="${data.nomor_antrian}">Cetak Nomor Antrian</button>`;
+
+                        // Store data in sessionStorage
+                        sessionStorage.setItem('nomorAntrianBerjalan', nomorAntrianBerjalanContainer.innerHTML);
+
+                        // Set timeout to activate animation effect
+                        setTimeout(() => {
+                            nomorAntrianBerjalanContainer.querySelector('.container_nomorantrianberjalan').style.opacity = 1;
+                        }, 10);
                     }
                 } catch (error) {
                     console.error('Error parsing JSON:', error);
                 }
             });
         });
+
+        function ambilNomorAntrian(namaPoli, nomorAntrian) {
+            sessionStorage.setItem('namaPoli', namaPoli);
+            sessionStorage.setItem('nomorAntrian', nomorAntrian);
+            window.location.href = '<?= base_url('laporan.php') ?>';
+        }
     });
-
-    function ambilNomorAntrian(idPoli, namaPoli) {
-        // Simpan data ke penyimpanan lokal atau variabel global
-        sessionStorage.setItem('idPoli', idPoli);
-        sessionStorage.setItem('namaPoli', namaPoli);
-
-        // Buka laporan.php
-        window.location.href = '<?= base_url('laporan.php') ?>';
-    }
 </script>
 <?= $this->endSection(); ?>

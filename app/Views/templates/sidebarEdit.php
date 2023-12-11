@@ -1,6 +1,6 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-success">
     <div class="app-brand demo">
-        <a href="../index" class="app-brand-link text-white">
+        <a href="../" class="app-brand-link text-white">
             <span class="app-brand-logo demo">
                 <img src="../../Logo_Padang.png" alt="" style="width: 20px;">
             </span>
@@ -66,7 +66,7 @@
             </li>
 
             <li class="menu-item">
-                <a href="../hapus_nomorantrian" class="menu-link text-white">
+                <a href="../nomorantrian_poli" class="menu-link text-white">
                     <i class="menu-icon tf-icons ti ti-ticket"></i>
                     <div data-i18n="No. Antrian Poli">No. Antrian Poli</div>
                 </a>
@@ -116,7 +116,7 @@
             </li>
 
             <li class="menu-item">
-                <a href="../hapus_nomorantrian" class="menu-link text-white">
+                <a href="../nomorantrian_poli" class="menu-link text-white">
                     <i class="menu-icon tf-icons ti ti-ticket"></i>
                     <div data-i18n="No. Antrian Poli">No. Antrian Poli</div>
                 </a>

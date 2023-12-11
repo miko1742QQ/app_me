@@ -3,31 +3,37 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-
-// UNtuk View Database
 use App\Models\DaftarKaryawanModel;
 use App\Models\DaftarNomorAntrianModel;
+use App\Models\DaftarPasienModel;
 use App\Models\DaftarPoliModel;
+use App\Models\ObatModel;
 
 class DaftarNoAntrianController extends BaseController
 {
     protected $karyawanModel;
     protected $poliModel;
     protected $antrianModel;
+    protected $pasienModel;
+    protected $obatModel;
 
     public function __construct()
     {
         $this->karyawanModel = new DaftarKaryawanModel();
         $this->antrianModel = new DaftarNomorAntrianModel();
+        $this->pasienModel = new DaftarPasienModel();
         $this->poliModel = new DaftarPoliModel();
+        $this->obatModel = new ObatModel();
     }
 
     public function index()
     {
         $data['title'] = 'Nomor Antrian SISPUS';
         $data['poli'] = $this->poliModel->findAll();
+        $data['pasien'] = $this->pasienModel->findAll();
+        $data['obat'] = $this->obatModel->findAll();
+        $data['dataAntrian'] = $this->antrianModel->getData1();
 
-        // Ambil nomor antrian untuk setiap bidang poli
         foreach ($data['poli'] as &$poli) {
             $latestAntrian = $this->antrianModel->where('id_poli', $poli['id'])->orderBy('id', 'DESC')->first();
             $poli['nomor_antrian'] = $latestAntrian ? $latestAntrian['nomor_antrian'] : 'Belum Ada';
@@ -36,61 +42,128 @@ class DaftarNoAntrianController extends BaseController
         return view('nomor_antrian', $data);
     }
 
-    public function hapus_nomorantrian()
+    public function nomorantrian_poli()
     {
         $data['title'] = 'Nomor Antrian SISPUS';
         $data['datauser'] = $this->karyawanModel->where(['nik' => user()->nik])->first();
         $data['poli'] = $this->poliModel->findAll();
+        $data['pasien'] = $this->pasienModel->findAll();
+        $data['obat'] = $this->obatModel->findAll();
         $data['antrian'] = $this->antrianModel->getData();
 
-        // dd($data);
-
-        return view('hapus_nomorantrian', $data);
+        return view('nomorantrian_poli', $data);
     }
 
-    public function delete_antrian($id = null)
+    public function fetchDataByJenisPoli()
     {
-        if ($this->antrianModel->delete($id) == true) {
-            return redirect()->to(base_url('hapus_nomorantrian'))->with('success', 'Nomor Antrian Berhasil Dihapus');
+        $jenisPoli = $this->request->getPost('jenis_poli');
+        $data = $this->antrianModel->getDataByJenisPoli($jenisPoli);
+
+        // Kembalikan data dalam format JSON
+        return $this->response->setJSON($data);
+    }
+
+    public function fetchNomorAntrianSelanjutnya()
+    {
+        $data = $this->antrianModel->getData1();
+
+        // Kembalikan data dalam format JSON
+        return $this->response->setJSON($data);
+    }
+
+    public function fetchKapasitas()
+    {
+        $data = $this->antrianModel->getData1();
+        $kapasitas = $data['kapasitas'];
+        $antrian_waiting = $data['antrian_waiting'];
+
+        $responseData = [
+            'kapasitas' => $kapasitas,
+            'antrian_waiting' => $antrian_waiting,
+        ];
+        // Kembalikan data dalam format JSON
+        return $this->response->setJSON($responseData);
+    }
+
+    public function antrian_selesai($nomor_antrian = null, $id = null)
+    {
+        // Pastikan nomor_antrian dan id_poli tidak kosong
+        if ($nomor_antrian === null || $id === null) {
+            // Jika kosong, lakukan sesuatu, seperti menampilkan pesan error atau mengarahkan pengguna ke halaman lain
+            return redirect()->to(base_url())->with('error', 'Nomor antrian atau ID poli tidak valid.');
+        }
+
+        $poli = $this->poliModel->find($id);
+        $antrian_waiting = $poli['antrian_waiting'] - ($poli['antrian_end'] + 1);
+
+        // Data yang akan diupdate
+        $data = [
+            'antrian_end' => $nomor_antrian,
+            'antrian_waiting' => $antrian_waiting
+        ];
+
+
+        // Update data di dalam model
+        if ($this->poliModel->update($id, $data)) {
+            // Jika update berhasil, arahkan pengguna ke halaman tertentu dengan pesan sukses
+            return redirect()->to(base_url('nomorantrian_poli'))->with('success', 'Nomor Antrian Telah Selesai');
         } else {
-            return redirect()->back()->with('error', 'Nomor Antrian Gagal Dihapus');
+            // Jika update gagal, arahkan pengguna kembali ke halaman sebelumnya dengan pesan error
+            return redirect()->back()->with('error', 'Nomor Antrian Gagal Diproses');
         }
     }
-
 
     public function ambilNomorAntrian($id_poli)
     {
-        // Ambil data poli berdasarkan ID
+        // Mendapatkan tanggal saat ini
+        $todayDate = date('Y-m-d');
         $poli = $this->poliModel->find($id_poli);
 
-        if (!$poli) {
-            // Tampilkan pesan atau redirect jika data poli tidak ditemukan
-            return $this->response->setJSON(['error' => 'Bidang poli tidak ditemukan']);
+        if ($poli['kapasitas'] <= $poli['antrian_waiting'] + $poli['antrian_proses'] - $poli['antrian_end']) {
+            // Menampilkan alert kapasitas penuh jika kapasitas sudah mencapai batas
+            return $this->response->setJSON(['error' => 'Kapasitas Poli Sudah Penuh']);
+        } else {
+            // Mencari entri antrian terbaru untuk poli dan tanggal saat ini
+            $latestAntrian = $this->antrianModel
+                ->where('id_poli', $id_poli)
+                ->where('tanggal', $todayDate)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            // Menentukan nomor antrian baru
+            $jumlahAntrian = $latestAntrian ? $latestAntrian['nomor_antrian'] + 1 : 1;
+
+            // Mencari entri antrian terbaru untuk poli dan tanggal saat ini
+            $AntrianSelanjutnya = $this->antrianModel
+                ->where('id_poli', $id_poli)
+                ->where('status', 'end')
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            // Menentukan nomor antrian selanjutnya
+            $jumlahAntrianSelanjutnya = $AntrianSelanjutnya ? $AntrianSelanjutnya['nomor_antrian'] + 1 : 1;
+
+            // Data untuk disisipkan ke dalam tabel no_antrian
+            $data = [
+                'tanggal' => $todayDate,
+                'nomor_antrian' => $jumlahAntrian,
+                'id_poli' => $id_poli,
+                'status' => 'waiting',
+            ];
+
+            // Menyisipkan data ke dalam tabel no_antrian
+            $this->antrianModel->insert($data);
+
+            // Menyiapkan data untuk respons JSON atau tindakan selanjutnya
+            $responseData = [
+                'idPoli' => $poli,
+                'nomor_antrian' => $jumlahAntrian,
+                'nomor_antrianselanjutnya' => $jumlahAntrianSelanjutnya,
+                'nama_poli' => $poli['nama_poli'],  // Sesuaikan dengan properti yang sesuai
+            ];
+
+            // Mengembalikan respons dalam format JSON
+            return $this->response->setJSON($responseData);
         }
-
-        // Cek kapasitas poli
-        $jumlahAntrian = $this->antrianModel->where('id_poli', $id_poli)->countAllResults();
-        if ($jumlahAntrian >= $poli['kapasitas']) {
-            // Set flashdata dengan pesan kapasitas penuh
-            session()->setFlashdata('error', 'Kapasitas bidang poli sudah penuh. Silakan pilih bidang poli lain.');
-            return $this->response->setJSON(['error' => 'Kapasitas penuh']);
-        }
-
-        // Tambahkan nomor antrian baru
-        $data = [
-            'nomor_antrian' => $jumlahAntrian + 1,
-            'tanggal' => date('Y-m-d'),
-            'id_poli' => $id_poli,
-        ];
-
-        // Tampilkan data yang akan diinsert ke dalam tabel
-        log_message('info', 'Data nomor antrian yang akan diinsert: ' . print_r($data, true));
-
-        $this->antrianModel->insert($data);
-
-        $data['nomor_antrian'] = $data['nomor_antrian'];
-        $data['nama_poli'] = $poli['nama_poli'];
-        // Kirim data sebagai JSON
-        return $this->response->setJSON($data);
     }
 }
