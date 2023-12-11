@@ -21,6 +21,13 @@
         <div class="col-lg-6 col-xl-6 col-md-6 col-xs-6 col-sm-6 col-6">
             <h4 class="py-2 mt-2">Daftar Laporan Transaksi</h4>
         </div>
+
+        <div class="col-lg-6 col-xl-6 col-md-6 col-xs-6 col-sm-6 col-6" align="right">
+            <a href="javascript:history.back();" class="btn btn-dark btn-sm btn-icon-split mt-2">
+                <span class="icon text-white-50"><i class="fas fa-backward"></i></span>
+                <span class="text p-1">Kembali</span>
+            </a>
+        </div>
     </div>
 
     <div class="card-body">
